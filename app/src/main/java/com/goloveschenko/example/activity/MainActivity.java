@@ -1,5 +1,6 @@
 package com.goloveschenko.example.activity;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.annotation.IdRes;
 import android.support.v7.app.AppCompatActivity;
@@ -15,8 +16,10 @@ import com.goloveschenko.example.action.Converter;
 import com.goloveschenko.example.action.Notation;
 import com.goloveschenko.example.action.Operation;
 import com.goloveschenko.example.R;
+import com.goloveschenko.example.dao.manager.DBManager;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     public final static String SYMBOL_MULTIPLY = " * ";
     public final static String SYMBOL_DEVIDE = " / ";
     public final static String SYMBOL_POWER = " ^ ";
+    public final static String SYMBOL_EQUALS = " = ";
 
     private HashMap<Integer, Button> buttonsMap;
 
@@ -210,11 +214,16 @@ public class MainActivity extends AppCompatActivity {
                         BigDecimal lastNumber = Converter.stringToValue(notation, text);
                         BigDecimal resultNumber = doOperation(curNumber, lastNumber);
                         String resultText = Converter.valueToString(notation, resultNumber);
+
                         if (resultText.contains(".")) {
                             inputText.setText(String.format("%.3f", resultText));
                         } else {
                             inputText.setText(resultText);
                         }
+
+                        //history
+                        String expression = expressionText.getText().toString() + text + SYMBOL_EQUALS + resultText;   //fix it
+                        DBManager.getInstance(getApplicationContext()).insertValue(expression, new Date().toString());
 
                         curNumber = BigDecimal.ZERO;
                         expressionText.setText("");
@@ -386,7 +395,7 @@ public class MainActivity extends AppCompatActivity {
         curNumber = BigDecimal.ZERO;
         notation = Notation.DEC;
         inputText = (EditText) findViewById(R.id.editText);
-        expressionText = (TextView) findViewById(R.id.textView);
+        expressionText = (TextView) findViewById(R.id.textExpressionView);
 
         buttonsMap = new HashMap<>();
         buttonsMap.put(R.id.button0, (Button) findViewById(R.id.button0));
@@ -416,6 +425,16 @@ public class MainActivity extends AppCompatActivity {
             buttonsMap.put(R.id.buttonE, (Button) findViewById(R.id.buttonE));
             buttonsMap.put(R.id.buttonF, (Button) findViewById(R.id.buttonF));
         }
+
+        //go to the history window
+        inputText.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
+                startActivity(intent);
+                return true;
+            }
+        });
 
         inputText.setSelection(1);
         inicializeButtons();

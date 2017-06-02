@@ -28,9 +28,10 @@
     <string name="buttonPower">^</string>
     <string name="buttonMultiply">*</string>
     <string name="buttonDevide">/</string>
-    
+
     <string name="radioButtonBin">Bin</string>
     <string name="radioButtonOct">Oct</string>
     <string name="radioButtonDec">Dec</string>
     <string name="radioButtonHex">Hex</string>
+    <string name="title_activity_history">HistoryActivity</string>
 </resources>
