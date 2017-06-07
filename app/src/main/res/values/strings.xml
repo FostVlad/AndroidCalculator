@@ -34,4 +34,26 @@
     <string name="radioButtonDec">Dec</string>
     <string name="radioButtonHex">Hex</string>
     <string name="title_activity_history">HistoryActivity</string>
+
+    <!-- ALERT MENU -->
+    <string name="history_item_alert_title">Choise action</string>
+    <string name="confirm_delete_title">Delete row?</string>
+    <string name="input_comment_title">Input comment</string>
+    <string name="confirm_clear_title">Delete rows?</string>
+    <string name="search_title">Search</string>
+    <string-array name="history_item_alert_menu">
+        <item>Comment</item>
+        <item>Delete</item>
+    </string-array>
+    <string name="OK">OK</string>
+    <string name="cancel">cancel</string>
+
+    <string name="input_date_hint">Input date</string>
+
+    <!-- HISTORY MENU -->
+    <string name="history_search">Search</string>
+    <string name="history_clear">Clear</string>
+
+    <string name="search_date_hint">Date</string>
+    <string name="search_comment_hint">Comment</string>
 </resources>

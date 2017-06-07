@@ -19,10 +19,14 @@ import com.goloveschenko.example.R;
 import com.goloveschenko.example.dao.manager.DBManager;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static final String DATE_FORMAT = "dd MMM yyyy";
+    public static final int RESULT_CODE = 200;
 
     public final static String SYMBOL_PLUS = " + ";
     public final static String SYMBOL_MINUS = " - ";
@@ -38,6 +42,14 @@ public class MainActivity extends AppCompatActivity {
     private BigDecimal curNumber;
     private EditText inputText;
     private TextView expressionText;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (data != null) {
+            String expr = data.getStringExtra(HistoryActivity.EXTRA_EXPRESSION_RESULT);
+            inputText.setText(expr);
+        }
+    }
 
     private void setListenerForButton(int idButton){
         View.OnClickListener buttonListener = new View.OnClickListener() {
@@ -222,8 +234,10 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         //history
-                        String expression = expressionText.getText().toString() + text + SYMBOL_EQUALS + resultText;   //fix it
-                        DBManager.getInstance(getApplicationContext()).insertValue(expression, new Date().toString());
+                        String expression = expressionText.getText().toString() + text + SYMBOL_EQUALS + resultText;
+                        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+                        String date = sdf.format(Calendar.getInstance().getTime());
+                        DBManager.getInstance().insertValue(expression, date, getApplicationContext());
 
                         curNumber = BigDecimal.ZERO;
                         expressionText.setText("");
@@ -235,19 +249,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private BigDecimal doOperation(BigDecimal num1, BigDecimal num2){
-        switch (operation){
-            case PLUS:
-                return num1.add(num2);
-            case MINUS:
-                return num1.subtract(num2);
-            case MULTIPLY:
-                return num1.multiply(num2);
-            case DEVIDE:
-                return num1.divide(num2, 3, BigDecimal.ROUND_HALF_DOWN);
-            case POWER:
-                return num1.pow(num2.intValue());
-            default:
-                return BigDecimal.ZERO;
+        try {
+            switch (operation) {
+                case PLUS:
+                    return num1.add(num2);
+                case MINUS:
+                    return num1.subtract(num2);
+                case MULTIPLY:
+                    return num1.multiply(num2);
+                case DEVIDE:
+                    return num1.divide(num2, 3, BigDecimal.ROUND_HALF_DOWN);
+                case POWER:
+                    return num1.pow(num2.intValue());
+                default:
+                    return BigDecimal.ZERO;
+            }
+        } catch (ArithmeticException e) {
+            curNumber = BigDecimal.ZERO;
+            return curNumber;
         }
     }
 
@@ -431,7 +450,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onLongClick(View v) {
                 Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, RESULT_CODE);
                 return true;
             }
         });

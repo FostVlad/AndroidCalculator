@@ -1,4 +1,4 @@
-package com.goloveschenko.example.dao;
+package com.goloveschenko.example.tools;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,10 +9,10 @@ import android.widget.TextView;
 import com.goloveschenko.example.R;
 import com.goloveschenko.example.entity.HistoryItem;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder>{
-    private ArrayList<HistoryItem> historyItems;
+    private List<HistoryItem> historyItems;
 
     public static class HistoryViewHolder extends RecyclerView.ViewHolder {
         public TextView dateTextView;
@@ -27,7 +27,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         }
     }
 
-    public HistoryAdapter(ArrayList<HistoryItem> historyItems) {
+    public HistoryAdapter(List<HistoryItem> historyItems) {
         this.historyItems = historyItems;
     }
 
