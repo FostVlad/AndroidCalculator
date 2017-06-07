@@ -41,9 +41,14 @@
     <string name="input_comment_title">Input comment</string>
     <string name="confirm_clear_title">Delete rows?</string>
     <string name="search_title">Search</string>
-    <string-array name="history_item_alert_menu">
+    <string-array name="history_item_menu">
         <item>Comment</item>
         <item>Delete</item>
+    </string-array>
+    <string name="history_input_title">Choise input</string>
+    <string-array name="history_item_input_menu">
+        <item>Input result</item>
+        <item>Input expression</item>
     </string-array>
     <string name="OK">OK</string>
     <string name="cancel">cancel</string>
@@ -56,4 +61,6 @@
 
     <string name="search_date_hint">Date</string>
     <string name="search_comment_hint">Comment</string>
+
+
 </resources>

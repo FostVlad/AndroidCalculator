@@ -30,6 +30,9 @@ import java.util.List;
 public class HistoryActivity extends AppCompatActivity {
 
     public static final String EXTRA_EXPRESSION_RESULT = "result";
+
+    public static final int MENU_INPUT_RESULT = 0;
+    public static final int MENU_INPUT_EXPRESSION = 1;
     public static final int MENU_COMMENT = 0;
     public static final int MENU_DELETE = 1;
 
@@ -58,18 +61,37 @@ public class HistoryActivity extends AppCompatActivity {
         historyView.addOnItemTouchListener(new RecyclerItemClickListener(historyView.getContext(), historyView, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                Intent intent = new Intent();
-                String result = historyItems.get(position).getExpression();
-                result = result.substring(result.indexOf("= ") + 2, result.length());
-                intent.putExtra(EXTRA_EXPRESSION_RESULT, result);
-                setResult(RESULT_OK, intent);
-                finish();
+                Resources res = getResources();
+                String[] menuItems = res.getStringArray(R.array.history_item_input_menu);
+                final HistoryItem item = historyItems.get(position);
+                AlertDialog.Builder menuBuilder = new AlertDialog.Builder(view.getContext());
+                menuBuilder.setTitle(R.string.history_input_title);
+                menuBuilder.setItems(menuItems, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String result = item.getExpression();
+                        switch (which) {
+                            case MENU_INPUT_RESULT:
+                                result = result.substring(result.indexOf("= ") + 2, result.length());
+                                break;
+                            case MENU_INPUT_EXPRESSION:
+                                result = result.substring(0, result.indexOf("="));
+                                break;
+                        }
+                        Intent intent = new Intent();
+                        intent.putExtra(EXTRA_EXPRESSION_RESULT, result);
+                        setResult(RESULT_OK, intent);
+                        finish();
+                    }
+                });
+                AlertDialog alert = menuBuilder.create();
+                alert.show();
             }
 
             @Override
             public void onLongItemClick(View view, final int position) {
                 Resources res = getResources();
-                String[] menuItems = res.getStringArray(R.array.history_item_alert_menu);
+                String[] menuItems = res.getStringArray(R.array.history_item_menu);
                 AlertDialog.Builder menuBuilder = new AlertDialog.Builder(view.getContext());
                 menuBuilder.setTitle(R.string.history_item_alert_title);
                 menuBuilder.setItems(menuItems, new DialogInterface.OnClickListener() {

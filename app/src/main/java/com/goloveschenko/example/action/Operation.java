@@ -1,5 +1,5 @@
 package com.goloveschenko.example.action;
 
 public enum Operation {
-    PLUS, MINUS, MULTIPLY, DEVIDE, POWER
+    NONE, PLUS, MINUS, MULTIPLY, DEVIDE, POWER
 }

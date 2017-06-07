@@ -12,6 +12,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.goloveschenko.example.action.Calculator;
 import com.goloveschenko.example.action.Converter;
 import com.goloveschenko.example.action.Notation;
 import com.goloveschenko.example.action.Operation;
@@ -117,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                         BigDecimal number = Converter.stringToValue(notation, text);
                         inputText.setText("");
                         if (curNumber.compareTo(BigDecimal.ZERO) != 0){
-                            curNumber = doOperation(curNumber, number);
+                            curNumber = Calculator.doOperation(operation, curNumber, number);
                         } else {
                             curNumber = number;
                         }
@@ -139,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
                         BigDecimal number = Converter.stringToValue(notation, text);
                         inputText.setText("");
                         if (curNumber.compareTo(BigDecimal.ZERO) != 0){
-                            curNumber = doOperation(curNumber, number);
+                            curNumber = Calculator.doOperation(operation, curNumber, number);
                         } else {
                             curNumber = number;
                         }
@@ -161,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
                         BigDecimal number = Converter.stringToValue(notation, text);
                         inputText.setText("");
                         if (curNumber.compareTo(BigDecimal.ZERO) != 0){
-                            curNumber = doOperation(curNumber, number);
+                            curNumber = Calculator.doOperation(operation, curNumber, number);
                         } else {
                             curNumber = number;
                         }
@@ -183,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
                         BigDecimal number = Converter.stringToValue(notation, text);
                         inputText.setText("");
                         if (curNumber.compareTo(BigDecimal.ZERO) != 0){
-                            curNumber = doOperation(curNumber, number);
+                            curNumber = Calculator.doOperation(operation, curNumber, number);
                         } else {
                             curNumber = number;
                         }
@@ -205,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
                         BigDecimal number = new BigDecimal(text);
                         inputText.setText("");
                         if (curNumber.compareTo(BigDecimal.ZERO) != 0){
-                            curNumber = doOperation(curNumber, number);
+                            curNumber = Calculator.doOperation(operation, curNumber, number);
                         } else {
                             curNumber = number;
                         }
@@ -223,8 +224,13 @@ public class MainActivity extends AppCompatActivity {
                             return;
                         }
 
-                        BigDecimal lastNumber = Converter.stringToValue(notation, text);
-                        BigDecimal resultNumber = doOperation(curNumber, lastNumber);
+                        BigDecimal resultNumber;
+                        if (operation != Operation.NONE) {
+                            BigDecimal lastNumber = Converter.stringToValue(notation, text);
+                            resultNumber = Calculator.doOperation(operation, curNumber, lastNumber);
+                        } else {
+                            resultNumber = Calculator.parse(text);
+                        }
                         String resultText = Converter.valueToString(notation, resultNumber);
 
                         if (resultText.contains(".")) {
@@ -240,33 +246,12 @@ public class MainActivity extends AppCompatActivity {
                         DBManager.getInstance().insertValue(expression, date, getApplicationContext());
 
                         curNumber = BigDecimal.ZERO;
+                        operation = Operation.NONE;
                         expressionText.setText("");
                         inputText.setSelection(resultText.length());
                     }
                 });
                 break;
-        }
-    }
-
-    private BigDecimal doOperation(BigDecimal num1, BigDecimal num2){
-        try {
-            switch (operation) {
-                case PLUS:
-                    return num1.add(num2);
-                case MINUS:
-                    return num1.subtract(num2);
-                case MULTIPLY:
-                    return num1.multiply(num2);
-                case DEVIDE:
-                    return num1.divide(num2, 3, BigDecimal.ROUND_HALF_DOWN);
-                case POWER:
-                    return num1.pow(num2.intValue());
-                default:
-                    return BigDecimal.ZERO;
-            }
-        } catch (ArithmeticException e) {
-            curNumber = BigDecimal.ZERO;
-            return curNumber;
         }
     }
 
@@ -413,6 +398,7 @@ public class MainActivity extends AppCompatActivity {
 
         curNumber = BigDecimal.ZERO;
         notation = Notation.DEC;
+        operation = Operation.NONE;
         inputText = (EditText) findViewById(R.id.editText);
         expressionText = (TextView) findViewById(R.id.textExpressionView);
 
