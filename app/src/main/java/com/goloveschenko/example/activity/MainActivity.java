@@ -1,5 +1,7 @@
 package com.goloveschenko.example.activity;
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.annotation.IdRes;
@@ -18,13 +20,18 @@ import com.goloveschenko.example.action.Notation;
 import com.goloveschenko.example.action.Operation;
 import com.goloveschenko.example.R;
 import com.goloveschenko.example.dao.manager.DBManager;
+import com.goloveschenko.example.fragment.FragmentBin;
+import com.goloveschenko.example.fragment.FragmentDec;
+import com.goloveschenko.example.fragment.FragmentHex;
+import com.goloveschenko.example.fragment.FragmentOct;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final String DATE_FORMAT = "dd MMM yyyy";
     public static final int RESULT_CODE = 200;
@@ -36,7 +43,10 @@ public class MainActivity extends AppCompatActivity {
     public final static String SYMBOL_POWER = " ^ ";
     public final static String SYMBOL_EQUALS = " = ";
 
-    private HashMap<Integer, Button> buttonsMap;
+    public final static String KEY_EXPRESSION = "expression";
+    public final static String KEY_NOTATION = "notation";
+    public final static String KEY_OPERATION = "operation";
+    public final static String KEY_NUMBER = "number";
 
     private Operation operation;
     private Notation notation;
@@ -52,24 +62,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setListenerForButton(int idButton){
-        View.OnClickListener buttonListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Button currentBtn = (Button) v;
-                String expStr;
-                if (!inputText.getText().toString().equals("0")) {
-                    expStr = inputText.getText() + currentBtn.getText().toString();
-                } else {
-                    expStr = currentBtn.getText().toString();
-                }
-                inputText.setText(expStr);
-                inputText.setSelection(expStr.length());
-            }
-        };
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(KEY_EXPRESSION, expressionText.getText().toString());
+        outState.putString(KEY_NOTATION, notation.toString());
+        outState.putString(KEY_OPERATION, operation.toString());
+        BigInteger number = curNumber.unscaledValue();
+        outState.putByteArray(KEY_NUMBER, number.toByteArray());
+    }
 
-        Button button = buttonsMap.get(idButton);
-        switch (idButton) {
+    @Override
+    public void onClick(View v) {
+        String text;
+        BigDecimal number;
+
+        switch (v.getId()) {
             case R.id.button0:
             case R.id.button1:
             case R.id.button2:
@@ -87,170 +95,143 @@ public class MainActivity extends AppCompatActivity {
             case R.id.buttonE:
             case R.id.buttonF:
             case R.id.buttonDevider:
-                button.setOnClickListener(buttonListener);
+                Button button = (Button) v;
+                String expStr;
+                if (!inputText.getText().toString().equals("0")) {
+                    expStr = inputText.getText() + button.getText().toString();
+                } else {
+                    expStr = button.getText().toString();
+                }
+                inputText.setText(expStr);
+                inputText.setSelection(expStr.length());
                 break;
             case R.id.buttonDelete:
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String text = inputText.getText().toString();
-                        if (text.length() > 1) {
-                            inputText.setText(text.substring(0, text.length() - 1));
-                            inputText.setSelection(text.length() - 1);
-                        } else {
-                            inputText.setText("0");
-                            inputText.setSelection(1);
-                            curNumber = BigDecimal.ZERO;
-                        }
-                    }
-                });
+                text = inputText.getText().toString();
+                if (text.length() > 1) {
+                    inputText.setText(text.substring(0, text.length() - 1));
+                    inputText.setSelection(text.length() - 1);
+                } else {
+                    inputText.setText("0");
+                    inputText.setSelection(1);
+                    curNumber = BigDecimal.ZERO;
+                }
                 break;
             case R.id.buttonPlus:
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String text = inputText.getText().toString();
-                        if (text.isEmpty()){
-                            return;
-                        }
-                        expressionText.setText(expressionText.getText() + text + SYMBOL_PLUS);
+                text = inputText.getText().toString();
+                if (text.isEmpty()){
+                    return;
+                }
+                expressionText.setText(expressionText.getText() + text + SYMBOL_PLUS);
 
-                        BigDecimal number = Converter.stringToValue(notation, text);
-                        inputText.setText("");
-                        if (curNumber.compareTo(BigDecimal.ZERO) != 0){
-                            curNumber = Calculator.doOperation(operation, curNumber, number);
-                        } else {
-                            curNumber = number;
-                        }
+                number = Converter.stringToValue(notation, text);
+                inputText.setText("");
+                if (curNumber.compareTo(BigDecimal.ZERO) != 0){
+                    curNumber = Calculator.doOperation(operation, curNumber, number);
+                } else {
+                    curNumber = number;
+                }
 
-                        operation = Operation.PLUS;
-                    }
-                });
+                operation = Operation.PLUS;
                 break;
             case R.id.buttonMinus:
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String text = inputText.getText().toString();
-                        if (text.isEmpty()){
-                            return;
-                        }
-                        expressionText.setText(expressionText.getText() + text + SYMBOL_MINUS);
+                text = inputText.getText().toString();
+                if (text.isEmpty()){
+                    return;
+                }
+                expressionText.setText(expressionText.getText() + text + SYMBOL_MINUS);
 
-                        BigDecimal number = Converter.stringToValue(notation, text);
-                        inputText.setText("");
-                        if (curNumber.compareTo(BigDecimal.ZERO) != 0){
-                            curNumber = Calculator.doOperation(operation, curNumber, number);
-                        } else {
-                            curNumber = number;
-                        }
+                number = Converter.stringToValue(notation, text);
+                inputText.setText("");
+                if (curNumber.compareTo(BigDecimal.ZERO) != 0){
+                    curNumber = Calculator.doOperation(operation, curNumber, number);
+                } else {
+                    curNumber = number;
+                }
 
-                        operation = Operation.MINUS;
-                    }
-                });
+                operation = Operation.MINUS;
                 break;
             case R.id.buttonMultiply:
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String text = inputText.getText().toString();
-                        if (text.isEmpty()){
-                            return;
-                        }
-                        expressionText.setText(expressionText.getText() + text + SYMBOL_MULTIPLY);
+                text = inputText.getText().toString();
+                if (text.isEmpty()){
+                    return;
+                }
+                expressionText.setText(expressionText.getText() + text + SYMBOL_MULTIPLY);
 
-                        BigDecimal number = Converter.stringToValue(notation, text);
-                        inputText.setText("");
-                        if (curNumber.compareTo(BigDecimal.ZERO) != 0){
-                            curNumber = Calculator.doOperation(operation, curNumber, number);
-                        } else {
-                            curNumber = number;
-                        }
+                number = Converter.stringToValue(notation, text);
+                inputText.setText("");
+                if (curNumber.compareTo(BigDecimal.ZERO) != 0){
+                    curNumber = Calculator.doOperation(operation, curNumber, number);
+                } else {
+                    curNumber = number;
+                }
 
-                        operation = Operation.MULTIPLY;
-                    }
-                });
+                operation = Operation.MULTIPLY;
                 break;
             case R.id.buttonDevide:
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String text = inputText.getText().toString();
-                        if (text.isEmpty()){
-                            return;
-                        }
-                        expressionText.setText(expressionText.getText() + text + SYMBOL_DEVIDE);
+                text = inputText.getText().toString();
+                if (text.isEmpty()){
+                    return;
+                }
+                expressionText.setText(expressionText.getText() + text + SYMBOL_DEVIDE);
 
-                        BigDecimal number = Converter.stringToValue(notation, text);
-                        inputText.setText("");
-                        if (curNumber.compareTo(BigDecimal.ZERO) != 0){
-                            curNumber = Calculator.doOperation(operation, curNumber, number);
-                        } else {
-                            curNumber = number;
-                        }
+                number = Converter.stringToValue(notation, text);
+                inputText.setText("");
+                if (curNumber.compareTo(BigDecimal.ZERO) != 0){
+                    curNumber = Calculator.doOperation(operation, curNumber, number);
+                } else {
+                    curNumber = number;
+                }
 
-                        operation = Operation.DEVIDE;
-                    }
-                });
+                operation = Operation.DEVIDE;
                 break;
             case R.id.buttonPower:
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String text = inputText.getText().toString();
-                        if (text.isEmpty()){
-                            return;
-                        }
-                        expressionText.setText(expressionText.getText() + text + SYMBOL_POWER);
+                text = inputText.getText().toString();
+                if (text.isEmpty()){
+                    return;
+                }
+                expressionText.setText(expressionText.getText() + text + SYMBOL_POWER);
 
-                        BigDecimal number = new BigDecimal(text);
-                        inputText.setText("");
-                        if (curNumber.compareTo(BigDecimal.ZERO) != 0){
-                            curNumber = Calculator.doOperation(operation, curNumber, number);
-                        } else {
-                            curNumber = number;
-                        }
+                number = new BigDecimal(text);
+                inputText.setText("");
+                if (curNumber.compareTo(BigDecimal.ZERO) != 0){
+                    curNumber = Calculator.doOperation(operation, curNumber, number);
+                } else {
+                    curNumber = number;
+                }
 
-                        operation = Operation.POWER;
-                    }
-                });
+                operation = Operation.POWER;
                 break;
             case R.id.buttonResult:
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String text = inputText.getText().toString();
-                        if (text.isEmpty()){
-                            return;
-                        }
+                text = inputText.getText().toString();
+                if (text.isEmpty()){
+                    return;
+                }
 
-                        BigDecimal resultNumber;
-                        if (operation != Operation.NONE) {
-                            BigDecimal lastNumber = Converter.stringToValue(notation, text);
-                            resultNumber = Calculator.doOperation(operation, curNumber, lastNumber);
-                        } else {
-                            resultNumber = Calculator.parse(text);
-                        }
-                        String resultText = Converter.valueToString(notation, resultNumber);
+                BigDecimal resultNumber;
+                if (operation != Operation.NONE) {
+                    BigDecimal lastNumber = Converter.stringToValue(notation, text);
+                    resultNumber = Calculator.doOperation(operation, curNumber, lastNumber);
+                } else {
+                    resultNumber = Calculator.parse(text);
+                }
+                String resultText = Converter.valueToString(notation, resultNumber);
 
-                        if (resultText.contains(".")) {
-                            inputText.setText(String.format("%.3f", resultText));
-                        } else {
-                            inputText.setText(resultText);
-                        }
+                if (resultText.contains(".")) {
+                    inputText.setText(String.format("%.3f", resultText));
+                } else {
+                    inputText.setText(resultText);
+                }
 
-                        //history
-                        String expression = expressionText.getText().toString() + text + SYMBOL_EQUALS + resultText;
-                        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
-                        String date = sdf.format(Calendar.getInstance().getTime());
-                        DBManager.getInstance().insertValue(expression, date, getApplicationContext());
+                //history
+                String expression = expressionText.getText().toString() + text + SYMBOL_EQUALS + resultText;
+                SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+                String date = sdf.format(Calendar.getInstance().getTime());
+                DBManager.getInstance().insertValue(expression, date, getApplicationContext());
 
-                        curNumber = BigDecimal.ZERO;
-                        operation = Operation.NONE;
-                        expressionText.setText("");
-                        inputText.setSelection(resultText.length());
-                    }
-                });
+                curNumber = BigDecimal.ZERO;
+                operation = Operation.NONE;
+                expressionText.setText("");
+                inputText.setSelection(resultText.length());
                 break;
         }
     }
@@ -262,38 +243,8 @@ public class MainActivity extends AppCompatActivity {
         inputText.setSelection(inputText.getText().length());
     }
 
-    private void inicializeButtons(){
-        //SYMBOLS
-        setListenerForButton(R.id.button0);
-        setListenerForButton(R.id.button1);
-        setListenerForButton(R.id.button2);
-        setListenerForButton(R.id.button3);
-        setListenerForButton(R.id.button4);
-        setListenerForButton(R.id.button5);
-        setListenerForButton(R.id.button6);
-        setListenerForButton(R.id.button7);
-        setListenerForButton(R.id.button8);
-        setListenerForButton(R.id.button9);
-        setListenerForButton(R.id.buttonDevider);
-
-        //OPERATIONS
-        setListenerForButton(R.id.buttonDelete);
-        setListenerForButton(R.id.buttonMultiply);
-        setListenerForButton(R.id.buttonDevide);
-        setListenerForButton(R.id.buttonPlus);
-        setListenerForButton(R.id.buttonMinus);
-        setListenerForButton(R.id.buttonPower);
-        setListenerForButton(R.id.buttonResult);
-
+    private void initRadioButtons(){
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            setListenerForButton(R.id.buttonA);
-            setListenerForButton(R.id.buttonB);
-            setListenerForButton(R.id.buttonC);
-            setListenerForButton(R.id.buttonD);
-            setListenerForButton(R.id.buttonE);
-            setListenerForButton(R.id.buttonF);
-
-            //RADIO BUTTONS
             RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
             radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
@@ -301,89 +252,24 @@ public class MainActivity extends AppCompatActivity {
                     switch (checkedId) {
                         case R.id.radioButtonHex:
                             updateInputText(Notation.HEX);
-
-                            buttonsMap.get(R.id.button2).setEnabled(true);
-                            buttonsMap.get(R.id.button3).setEnabled(true);
-                            buttonsMap.get(R.id.button4).setEnabled(true);
-                            buttonsMap.get(R.id.button5).setEnabled(true);
-                            buttonsMap.get(R.id.button6).setEnabled(true);
-                            buttonsMap.get(R.id.button7).setEnabled(true);
-                            buttonsMap.get(R.id.button8).setEnabled(true);
-                            buttonsMap.get(R.id.button9).setEnabled(true);
-                            buttonsMap.get(R.id.buttonA).setEnabled(true);
-                            buttonsMap.get(R.id.buttonB).setEnabled(true);
-                            buttonsMap.get(R.id.buttonC).setEnabled(true);
-                            buttonsMap.get(R.id.buttonD).setEnabled(true);
-                            buttonsMap.get(R.id.buttonE).setEnabled(true);
-                            buttonsMap.get(R.id.buttonF).setEnabled(true);
-
                             notation = Notation.HEX;
                             break;
                         case R.id.radioButtonDec:
                             updateInputText(Notation.DEC);
-
-                            buttonsMap.get(R.id.button2).setEnabled(true);
-                            buttonsMap.get(R.id.button3).setEnabled(true);
-                            buttonsMap.get(R.id.button4).setEnabled(true);
-                            buttonsMap.get(R.id.button5).setEnabled(true);
-                            buttonsMap.get(R.id.button6).setEnabled(true);
-                            buttonsMap.get(R.id.button7).setEnabled(true);
-                            buttonsMap.get(R.id.button8).setEnabled(true);
-                            buttonsMap.get(R.id.button9).setEnabled(true);
-                            buttonsMap.get(R.id.buttonA).setEnabled(false);
-                            buttonsMap.get(R.id.buttonB).setEnabled(false);
-                            buttonsMap.get(R.id.buttonC).setEnabled(false);
-                            buttonsMap.get(R.id.buttonD).setEnabled(false);
-                            buttonsMap.get(R.id.buttonE).setEnabled(false);
-                            buttonsMap.get(R.id.buttonF).setEnabled(false);
-
                             notation = Notation.DEC;
                             break;
                         case R.id.radioButtonOct:
                             updateInputText(Notation.OCT);
-
-                            buttonsMap.get(R.id.button2).setEnabled(true);
-                            buttonsMap.get(R.id.button3).setEnabled(true);
-                            buttonsMap.get(R.id.button4).setEnabled(true);
-                            buttonsMap.get(R.id.button5).setEnabled(true);
-                            buttonsMap.get(R.id.button6).setEnabled(true);
-                            buttonsMap.get(R.id.button7).setEnabled(true);
-                            buttonsMap.get(R.id.button8).setEnabled(false);
-                            buttonsMap.get(R.id.button9).setEnabled(false);
-                            buttonsMap.get(R.id.buttonA).setEnabled(false);
-                            buttonsMap.get(R.id.buttonB).setEnabled(false);
-                            buttonsMap.get(R.id.buttonC).setEnabled(false);
-                            buttonsMap.get(R.id.buttonD).setEnabled(false);
-                            buttonsMap.get(R.id.buttonE).setEnabled(false);
-                            buttonsMap.get(R.id.buttonF).setEnabled(false);
-
                             notation = Notation.OCT;
                             break;
                         case R.id.radioButtonBin:
                             updateInputText(Notation.BIN);
-
-                            buttonsMap.get(R.id.button2).setEnabled(false);
-                            buttonsMap.get(R.id.button3).setEnabled(false);
-                            buttonsMap.get(R.id.button4).setEnabled(false);
-                            buttonsMap.get(R.id.button5).setEnabled(false);
-                            buttonsMap.get(R.id.button6).setEnabled(false);
-                            buttonsMap.get(R.id.button7).setEnabled(false);
-                            buttonsMap.get(R.id.button8).setEnabled(false);
-                            buttonsMap.get(R.id.button9).setEnabled(false);
-                            buttonsMap.get(R.id.buttonA).setEnabled(false);
-                            buttonsMap.get(R.id.buttonB).setEnabled(false);
-                            buttonsMap.get(R.id.buttonC).setEnabled(false);
-                            buttonsMap.get(R.id.buttonD).setEnabled(false);
-                            buttonsMap.get(R.id.buttonE).setEnabled(false);
-                            buttonsMap.get(R.id.buttonF).setEnabled(false);
-
                             notation = Notation.BIN;
                             break;
                     }
+                    initFragment(notation);
                 }
             });
-
-            buttonsMap.get(R.id.buttonDevider).setEnabled(false);
 
             //first checked DEC
             RadioButton radioButton = (RadioButton) findViewById(R.id.radioButtonDec);
@@ -396,39 +282,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        curNumber = BigDecimal.ZERO;
-        notation = Notation.DEC;
-        operation = Operation.NONE;
         inputText = (EditText) findViewById(R.id.editText);
         expressionText = (TextView) findViewById(R.id.textExpressionView);
-
-        buttonsMap = new HashMap<>();
-        buttonsMap.put(R.id.button0, (Button) findViewById(R.id.button0));
-        buttonsMap.put(R.id.button1, (Button) findViewById(R.id.button1));
-        buttonsMap.put(R.id.button2, (Button) findViewById(R.id.button2));
-        buttonsMap.put(R.id.button3, (Button) findViewById(R.id.button3));
-        buttonsMap.put(R.id.button4, (Button) findViewById(R.id.button4));
-        buttonsMap.put(R.id.button5, (Button) findViewById(R.id.button5));
-        buttonsMap.put(R.id.button6, (Button) findViewById(R.id.button6));
-        buttonsMap.put(R.id.button7, (Button) findViewById(R.id.button7));
-        buttonsMap.put(R.id.button8, (Button) findViewById(R.id.button8));
-        buttonsMap.put(R.id.button9, (Button) findViewById(R.id.button9));
-        buttonsMap.put(R.id.buttonDevider, (Button) findViewById(R.id.buttonDevider));
-        buttonsMap.put(R.id.buttonDelete, (Button) findViewById(R.id.buttonDelete));
-        buttonsMap.put(R.id.buttonMultiply, (Button) findViewById(R.id.buttonMultiply));
-        buttonsMap.put(R.id.buttonDevide, (Button) findViewById(R.id.buttonDevide));
-        buttonsMap.put(R.id.buttonPlus, (Button) findViewById(R.id.buttonPlus));
-        buttonsMap.put(R.id.buttonMinus, (Button) findViewById(R.id.buttonMinus));
-        buttonsMap.put(R.id.buttonPower, (Button) findViewById(R.id.buttonPower));
-        buttonsMap.put(R.id.buttonResult, (Button) findViewById(R.id.buttonResult));
+        if (savedInstanceState != null) {
+            expressionText.setText(savedInstanceState.getString(KEY_EXPRESSION));
+            notation = Notation.valueOf(savedInstanceState.getString(KEY_NOTATION));
+            operation = Operation.valueOf(savedInstanceState.getString(KEY_OPERATION));
+            BigInteger number = new BigInteger(savedInstanceState.getByteArray(KEY_NUMBER));
+            curNumber = new BigDecimal(number);
+        } else {
+            curNumber = BigDecimal.ZERO;
+            notation = Notation.DEC;
+            operation = Operation.NONE;
+        }
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            buttonsMap.put(R.id.buttonA, (Button) findViewById(R.id.buttonA));
-            buttonsMap.put(R.id.buttonB, (Button) findViewById(R.id.buttonB));
-            buttonsMap.put(R.id.buttonC, (Button) findViewById(R.id.buttonC));
-            buttonsMap.put(R.id.buttonD, (Button) findViewById(R.id.buttonD));
-            buttonsMap.put(R.id.buttonE, (Button) findViewById(R.id.buttonE));
-            buttonsMap.put(R.id.buttonF, (Button) findViewById(R.id.buttonF));
+            initRadioButtons();
         }
 
         //go to the history window
@@ -442,6 +311,26 @@ public class MainActivity extends AppCompatActivity {
         });
 
         inputText.setSelection(1);
-        inicializeButtons();
+    }
+
+    private void initFragment(Notation notation) {
+        Fragment fragment = null;
+        switch (notation) {
+            case BIN:
+                fragment = new FragmentBin();
+                break;
+            case OCT:
+                fragment = new FragmentOct();
+                break;
+            case DEC:
+                fragment = new FragmentDec();
+                break;
+            case HEX:
+                fragment = new FragmentHex();
+                break;
+        }
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragmentCont, fragment)
+                .commit();
     }
 }
