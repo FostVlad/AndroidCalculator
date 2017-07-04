@@ -6,6 +6,7 @@
 
     <GridLayout
         android:id="@+id/gridLayout"
+        android:layout_gravity="center_horizontal"
         android:layout_width="443dp"
         android:layout_height="203dp">
 

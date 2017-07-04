@@ -1,6 +1,7 @@
 package com.goloveschenko.example.fragment;
 
 import android.app.Fragment;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -37,6 +38,8 @@ public class FragmentDec extends Fragment {
         button = (Button) view.findViewById(R.id.button8);
         button.setOnClickListener((MainActivity) getActivity());
         button = (Button) view.findViewById(R.id.button9);
+        button.setOnClickListener((MainActivity) getActivity());
+        button = (Button) view.findViewById(R.id.buttonDevider);
         button.setOnClickListener((MainActivity) getActivity());
         button = (Button) view.findViewById(R.id.buttonDelete);
         button.setOnClickListener((MainActivity) getActivity());

@@ -30,6 +30,7 @@ import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -68,8 +69,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         outState.putString(KEY_EXPRESSION, expressionText.getText().toString());
         outState.putString(KEY_NOTATION, notation.toString());
         outState.putString(KEY_OPERATION, operation.toString());
-        BigInteger number = curNumber.unscaledValue();
-        outState.putByteArray(KEY_NUMBER, number.toByteArray());
+        outState.putString(KEY_NUMBER, curNumber.toString());
+//        BigInteger number = curNumber.unscaledValue();
+//        outState.putByteArray(KEY_NUMBER, number.toByteArray());
     }
 
     @Override
@@ -97,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.buttonDevider:
                 Button button = (Button) v;
                 String expStr;
-                if (!inputText.getText().toString().equals("0")) {
+                if (!inputText.getText().toString().equals("0") || v.getId() == R.id.buttonDevider) {
                     expStr = inputText.getText() + button.getText().toString();
                 } else {
                     expStr = button.getText().toString();
@@ -215,16 +217,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     resultNumber = Calculator.parse(text);
                 }
                 String resultText = Converter.valueToString(notation, resultNumber);
-
-                if (resultText.contains(".")) {
-                    inputText.setText(String.format("%.3f", resultText));
-                } else {
-                    inputText.setText(resultText);
-                }
+                inputText.setText(resultText);
 
                 //history
                 String expression = expressionText.getText().toString() + text + SYMBOL_EQUALS + resultText;
-                SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+                SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.US);
                 String date = sdf.format(Calendar.getInstance().getTime());
                 DBManager.getInstance().insertValue(expression, date, getApplicationContext());
 
@@ -288,13 +285,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             expressionText.setText(savedInstanceState.getString(KEY_EXPRESSION));
             notation = Notation.valueOf(savedInstanceState.getString(KEY_NOTATION));
             operation = Operation.valueOf(savedInstanceState.getString(KEY_OPERATION));
-            BigInteger number = new BigInteger(savedInstanceState.getByteArray(KEY_NUMBER));
-            curNumber = new BigDecimal(number);
+//            BigInteger number = new BigInteger(savedInstanceState.getByteArray(KEY_NUMBER));
+//            curNumber = new BigDecimal(number);
+            curNumber = new BigDecimal(savedInstanceState.getString(KEY_NUMBER));
         } else {
             curNumber = BigDecimal.ZERO;
             notation = Notation.DEC;
             operation = Operation.NONE;
         }
+
+        initFragment(Notation.DEC);
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             initRadioButtons();
