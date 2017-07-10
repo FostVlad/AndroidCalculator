@@ -46,6 +46,20 @@ public class HistoryActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_search:
+                searchItems();
+                return true;
+            case R.id.menu_clear:
+                clearItems();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
@@ -164,7 +178,7 @@ public class HistoryActivity extends AppCompatActivity {
         }));
     }
 
-    public void OnClickSearch(MenuItem item) {
+    public void searchItems() {
         AlertDialog.Builder searchBuilder = new AlertDialog.Builder(historyView.getContext());
         final View view = getLayoutInflater().inflate(R.layout.search_panel, null);
         searchBuilder
@@ -193,7 +207,7 @@ public class HistoryActivity extends AppCompatActivity {
         alert.show();
     }
 
-    public void OnClickClear(MenuItem item) {
+    public void clearItems() {
         AlertDialog.Builder clearBuilder = new AlertDialog.Builder(historyView.getContext());
         clearBuilder
                 .setMessage(R.string.confirm_clear_title)

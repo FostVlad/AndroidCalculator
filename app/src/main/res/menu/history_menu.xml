@@ -3,16 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/search"
+        android:id="@+id/menu_search"
         android:icon="@android:drawable/ic_menu_search"
         android:title="@string/history_search"
-        android:onClick="OnClickSearch"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
     <item
-        android:id="@+id/clear"
+        android:id="@+id/menu_clear"
         android:title="@string/history_clear"
         android:icon="@android:drawable/ic_menu_delete"
-        android:onClick="OnClickClear"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
 
 </menu>

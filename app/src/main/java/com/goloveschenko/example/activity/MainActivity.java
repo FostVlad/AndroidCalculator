@@ -26,10 +26,8 @@ import com.goloveschenko.example.fragment.FragmentHex;
 import com.goloveschenko.example.fragment.FragmentOct;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -70,8 +68,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         outState.putString(KEY_NOTATION, notation.toString());
         outState.putString(KEY_OPERATION, operation.toString());
         outState.putString(KEY_NUMBER, curNumber.toString());
-//        BigInteger number = curNumber.unscaledValue();
-//        outState.putByteArray(KEY_NUMBER, number.toByteArray());
     }
 
     @Override
@@ -285,8 +281,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             expressionText.setText(savedInstanceState.getString(KEY_EXPRESSION));
             notation = Notation.valueOf(savedInstanceState.getString(KEY_NOTATION));
             operation = Operation.valueOf(savedInstanceState.getString(KEY_OPERATION));
-//            BigInteger number = new BigInteger(savedInstanceState.getByteArray(KEY_NUMBER));
-//            curNumber = new BigDecimal(number);
             curNumber = new BigDecimal(savedInstanceState.getString(KEY_NUMBER));
         } else {
             curNumber = BigDecimal.ZERO;
