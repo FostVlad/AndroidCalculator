@@ -7,6 +7,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -52,6 +54,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private BigDecimal curNumber;
     private EditText inputText;
     private TextView expressionText;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_history:
+                Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
+                startActivityForResult(intent, RESULT_CODE);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -293,16 +313,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             initRadioButtons();
         }
-
-        //go to the history window
-        inputText.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
-                startActivityForResult(intent, RESULT_CODE);
-                return true;
-            }
-        });
 
         inputText.setSelection(1);
     }
