@@ -5,7 +5,7 @@
     <item
         android:id="@+id/menu_history"
         android:icon="@android:drawable/ic_menu_recent_history"
-        android:title="@string/history_search"
+        android:title="@string/menu_main_history"
         app:showAsAction="ifRoom"/>
 
 </menu>

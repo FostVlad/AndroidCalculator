@@ -50,14 +50,15 @@
         <item>Input result</item>
         <item>Input expression</item>
     </string-array>
-    <string name="OK">OK</string>
-    <string name="cancel">cancel</string>
 
     <string name="input_date_hint">Input date</string>
 
+    <!-- MAIN MENU -->
+    <string name="menu_main_history">History</string>
+
     <!-- HISTORY MENU -->
-    <string name="history_search">Search</string>
-    <string name="history_clear">Clear</string>
+    <string name="menu_history_search">Search</string>
+    <string name="menu_history_clear">Clear</string>
 
     <string name="search_date_hint">Date</string>
     <string name="search_comment_hint">Comment</string>

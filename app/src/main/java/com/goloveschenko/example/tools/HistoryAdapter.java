@@ -12,6 +12,8 @@ import com.goloveschenko.example.entity.HistoryItem;
 import java.util.List;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder>{
+    public final static String SYMBOL_EQUALS = " = ";
+
     private List<HistoryItem> historyItems;
 
     public static class HistoryViewHolder extends RecyclerView.ViewHolder {
@@ -33,15 +35,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
 
     @Override
     public HistoryAdapter.HistoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.history_item, parent, false);
-        HistoryViewHolder vh = new HistoryViewHolder(v);
-        return vh;
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.history_item, parent, false);
+        return new HistoryViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(HistoryViewHolder holder, int pos) {
         holder.dateTextView.setText(historyItems.get(pos).getDate());
-        holder.expressionTextView.setText(historyItems.get(pos).getExpression());
+        holder.expressionTextView.setText(historyItems.get(pos).getExpression() + SYMBOL_EQUALS + historyItems.get(pos).getResult());
         holder.commentTextView.setText(historyItems.get(pos).getComment());
     }
 

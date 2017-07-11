@@ -4,6 +4,7 @@ public class HistoryItem {
     private int id;
     private String date;
     private String expression;
+    private String result;
     private String comment;
 
     public HistoryItem() {
@@ -37,6 +38,14 @@ public class HistoryItem {
 
     public void setExpression(String expression) {
         this.expression = expression;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 
     public String getComment() {

@@ -25,6 +25,7 @@ import com.goloveschenko.example.tools.RecyclerItemClickListener;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class HistoryActivity extends AppCompatActivity {
 
@@ -82,13 +83,13 @@ public class HistoryActivity extends AppCompatActivity {
                 menuBuilder.setItems(menuItems, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String result = item.getExpression();
+                        String result = "";
                         switch (which) {
                             case MENU_INPUT_RESULT:
-                                result = result.substring(result.indexOf("= ") + 2, result.length());
+                                result = item.getResult();
                                 break;
                             case MENU_INPUT_EXPRESSION:
-                                result = result.substring(0, result.indexOf("="));
+                                result = item.getExpression();
                                 break;
                         }
                         Intent intent = new Intent();
@@ -119,13 +120,13 @@ public class HistoryActivity extends AppCompatActivity {
                                         .setCancelable(false)
                                         .setTitle(R.string.input_comment_title)
                                         .setView(input)
-                                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                        .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 dialog.cancel();
                                             }
                                         })
-                                        .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
+                                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 HistoryItem item = historyItems.get(position);
@@ -151,13 +152,13 @@ public class HistoryActivity extends AppCompatActivity {
                                 deleteBuilder
                                         .setMessage(R.string.confirm_delete_title)
                                         .setCancelable(false)
-                                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                        .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 dialog.cancel();
                                             }
                                         })
-                                        .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
+                                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 HistoryItem item = historyItems.get(position);
@@ -185,13 +186,13 @@ public class HistoryActivity extends AppCompatActivity {
                 .setMessage(R.string.search_title)
                 .setCancelable(false)
                 .setView(view)
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
                     }
                 })
-                .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         EditText commentText = (EditText) view.findViewById(R.id.search_comment);
@@ -212,13 +213,13 @@ public class HistoryActivity extends AppCompatActivity {
         clearBuilder
                 .setMessage(R.string.confirm_clear_title)
                 .setCancelable(false)
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
                     }
                 })
-                .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         DBManager.getInstance().deleteAll(getApplicationContext());
@@ -238,7 +239,7 @@ public class HistoryActivity extends AppCompatActivity {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 calendar.set(year, month, dayOfMonth);
-                SimpleDateFormat sdf = new SimpleDateFormat(MainActivity.DATE_FORMAT);
+                SimpleDateFormat sdf = new SimpleDateFormat(MainActivity.DATE_FORMAT, Locale.US);
                 String date = sdf.format(calendar.getTime());
                 dateText.setText(date);
             }

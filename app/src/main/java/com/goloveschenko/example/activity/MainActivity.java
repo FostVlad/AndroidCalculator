@@ -42,7 +42,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public final static String SYMBOL_MULTIPLY = " * ";
     public final static String SYMBOL_DEVIDE = " / ";
     public final static String SYMBOL_POWER = " ^ ";
-    public final static String SYMBOL_EQUALS = " = ";
 
     public final static String KEY_EXPRESSION = "expression";
     public final static String KEY_NOTATION = "notation";
@@ -232,19 +231,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 } else {
                     resultNumber = Calculator.parse(text);
                 }
-                String resultText = Converter.valueToString(notation, resultNumber);
-                inputText.setText(resultText);
+                String result = Converter.valueToString(notation, resultNumber);
+                inputText.setText(result);
 
                 //history
-                String expression = expressionText.getText().toString() + text + SYMBOL_EQUALS + resultText;
+                String expression = expressionText.getText().toString() + text;
                 SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.US);
                 String date = sdf.format(Calendar.getInstance().getTime());
-                DBManager.getInstance().insertValue(expression, date, getApplicationContext());
+                DBManager.getInstance().insertValue(expression, result, date, getApplicationContext());
 
                 curNumber = BigDecimal.ZERO;
                 operation = Operation.NONE;
                 expressionText.setText("");
-                inputText.setSelection(resultText.length());
+                inputText.setSelection(result.length());
                 break;
         }
     }

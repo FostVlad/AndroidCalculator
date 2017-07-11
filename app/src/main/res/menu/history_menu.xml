@@ -5,11 +5,11 @@
     <item
         android:id="@+id/menu_search"
         android:icon="@android:drawable/ic_menu_search"
-        android:title="@string/history_search"
+        android:title="@string/menu_history_search"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/menu_clear"
-        android:title="@string/history_clear"
+        android:title="@string/menu_history_clear"
         android:icon="@android:drawable/ic_menu_delete"
         app:showAsAction="ifRoom"/>
 
