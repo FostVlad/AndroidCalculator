@@ -1,26 +1,28 @@
 package com.goloveschenko.example.entity;
 
+import com.goloveschenko.example.activity.HistoryActivity;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class HistoryItem {
-    private int id;
+    private long id;
     private String date;
     private String expression;
     private String result;
     private String comment;
 
     public HistoryItem() {
+        SimpleDateFormat sdf = new SimpleDateFormat(HistoryActivity.DATE_FORMAT, Locale.US);
+        this.date = sdf.format(new Date());
     }
 
-    public HistoryItem(String date, String expression, String comment) {
-        this.date = date;
-        this.expression = expression;
-        this.comment = comment;
-    }
-
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

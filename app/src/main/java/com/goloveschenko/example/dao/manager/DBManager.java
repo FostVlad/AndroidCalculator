@@ -14,10 +14,11 @@ import java.util.List;
 public class DBManager {
     private static DBManager mInstance;
     private DBHelper dbHelper;
+    private SQLiteDatabase database;
 
-    public static DBManager getInstance(){
+    public static DBManager getInstance(Context context){
         if (mInstance == null) {
-            mInstance = new DBManager();
+            mInstance = new DBManager(context.getApplicationContext());
         }
         return mInstance;
     }
@@ -25,125 +26,103 @@ public class DBManager {
     private DBManager() {
     }
 
-    public List<HistoryItem> selectValues(Context context){
+    private DBManager(Context context) {
         dbHelper = new DBHelper(context);
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
+    }
 
-        Cursor cursor = database.query(DBHelper.TABLE_NAME, null, null, null, null, null, null);
-        ArrayList<HistoryItem> historyItems = new ArrayList<>();
+    private HistoryCursor queryItems(String whereClause, String[] whereArgs){
+        database = dbHelper.getReadableDatabase();
+        Cursor cursor = database.query(DBHelper.TABLE_NAME, null, whereClause, whereArgs, null, null, null);
+        return new HistoryCursor(cursor);
+    }
 
-        if (cursor.moveToFirst()) {
-            int idColIdx = cursor.getColumnIndex(DBHelper.ID);
-            int expressionColIdx = cursor.getColumnIndex(DBHelper.EXPRESSION);
-            int resultComIdx = cursor.getColumnIndex(DBHelper.RESULT);
-            int dateColIdx = cursor.getColumnIndex(DBHelper.DATE);
-            int commentColIdx = cursor.getColumnIndex(DBHelper.COMMENT);
+    private ContentValues getContentValues(HistoryItem item){
+        ContentValues values = new ContentValues();
+        values.put(DBHelper.EXPRESSION, item.getExpression());
+        values.put(DBHelper.RESULT, item.getResult());
+        values.put(DBHelper.DATE, item.getDate());
+        values.put(DBHelper.COMMENT, item.getComment());
 
-            do {
-                HistoryItem item = new HistoryItem();
-                item.setId(cursor.getInt(idColIdx));
-                item.setExpression(cursor.getString(expressionColIdx));
-                item.setResult(cursor.getString(resultComIdx));
-                item.setDate(cursor.getString(dateColIdx));
-                item.setComment(cursor.getString(commentColIdx));
-                historyItems.add(item);
-            } while (cursor.moveToNext());
+        return values;
+    }
+
+    public List<HistoryItem> selectValues(){
+        database = dbHelper.getReadableDatabase();
+
+        List<HistoryItem> historyItems = new ArrayList<>();
+        HistoryCursor cursor = queryItems(null, null);
+
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                historyItems.add(cursor.getHistoryItem());
+                cursor.moveToNext();
+            }
+        } finally {
+            cursor.close();
         }
 
-        cursor.close();
-        dbHelper.close();
+        database.close();
         return historyItems;
     }
 
-    public void insertValue(String expression, String result, String date, String comment, Context context){
-        dbHelper = new DBHelper(context);
-        ContentValues contentValues = new ContentValues();
+    public void insertValue(HistoryItem item){
+        ContentValues values = getContentValues(item);
+        database = dbHelper.getWritableDatabase();
+        database.insert(DBHelper.TABLE_NAME, null, values);
 
-        contentValues.put(DBHelper.EXPRESSION, expression);
-        contentValues.put(DBHelper.RESULT, result);
-        contentValues.put(DBHelper.DATE, date);
-        contentValues.put(DBHelper.COMMENT, comment);
-
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        database.insert(DBHelper.TABLE_NAME, null, contentValues);
-
-        dbHelper.close();
+        database.close();
     }
 
-    public void insertValue(String expression, String result, String date, Context context){
-        insertValue(expression, result, date, "", context);
+    public void updateValue(HistoryItem item){
+        database = dbHelper.getWritableDatabase();
+        ContentValues values = getContentValues(item);
+        String id = String.valueOf(item.getId());
+        database.update(DBHelper.TABLE_NAME, values, DBHelper.ID + " = ?", new String[] {id});
+
+        database.close();
     }
 
-    public void updateValue(HistoryItem item, Context context){
-        dbHelper = new DBHelper(context);
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
+    public void deleteValue(long id){
+        database = dbHelper.getWritableDatabase();
+        database.delete(DBHelper.TABLE_NAME, DBHelper.ID + " = ?", new String[] {String.valueOf(id)});
 
-        contentValues.put(DBHelper.EXPRESSION, item.getExpression());
-        contentValues.put(DBHelper.RESULT, item.getResult());
-        contentValues.put(DBHelper.DATE, item.getDate());
-        contentValues.put(DBHelper.COMMENT, item.getComment());
-
-        String clause = String.format(DBHelper.ID + " = %s", item.getId());
-        database.update(DBHelper.TABLE_NAME, contentValues, clause, null);
-
-        dbHelper.close();
+        database.close();
     }
 
-    public void deleteValue(Integer id, Context context){
-        dbHelper = new DBHelper(context);
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        String clause = String.format(DBHelper.ID + " = %s", id);
-        database.delete(DBHelper.TABLE_NAME, clause, null);
-
-        dbHelper.close();
-    }
-
-    public void deleteAll(Context context){
-        dbHelper = new DBHelper(context);
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
+    public void deleteAll(){
+        database = dbHelper.getWritableDatabase();
         database.delete(DBHelper.TABLE_NAME, "", null);
 
-        dbHelper.close();
+        database.close();
     }
 
-    public List<HistoryItem> search(String date, String comment, Context context){
-        dbHelper = new DBHelper(context);
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
+    public List<HistoryItem> search(String date, String comment){
+        database = dbHelper.getReadableDatabase();
         List<HistoryItem> historyItems = new ArrayList<>();
 
-        String clause;
+        HistoryCursor cursor;
         if (!comment.isEmpty() && !date.isEmpty()) {
-            clause = DBHelper.DATE + " = '" + date + "' and " + DBHelper.COMMENT + " LIKE '%" + comment + "%'";
+            cursor = queryItems(DBHelper.DATE + " = '?' and " + DBHelper.COMMENT + " LIKE '%?%'", new String[] {date, comment});
         } else if (!comment.isEmpty() && date.isEmpty()) {
-            clause = DBHelper.COMMENT + " LIKE '%" + comment + "%'";
+            cursor = queryItems(DBHelper.COMMENT + " LIKE '%?%'", new String[] {comment});
         } else if (comment.isEmpty() && !date.isEmpty()) {
-            clause = DBHelper.DATE + " = '" + date + "'";
+            cursor = queryItems(DBHelper.DATE + " = '?'", new String[] {date});
         } else {
             return historyItems;
         }
 
-        Cursor cursor = database.query(DBHelper.TABLE_NAME, null, clause, null, null, null, null);
-        if (cursor.moveToFirst()) {
-            int idColIdx = cursor.getColumnIndex(DBHelper.ID);
-            int expressionColIdx = cursor.getColumnIndex(DBHelper.EXPRESSION);
-            int resultColIdx = cursor.getColumnIndex(DBHelper.RESULT);
-            int dateColIdx = cursor.getColumnIndex(DBHelper.DATE);
-            int commentColIdx = cursor.getColumnIndex(DBHelper.COMMENT);
-
-            do {
-                HistoryItem item = new HistoryItem();
-                item.setId(cursor.getInt(idColIdx));
-                item.setExpression(cursor.getString(expressionColIdx));
-                item.setResult(cursor.getString(resultColIdx));
-                item.setDate(cursor.getString(dateColIdx));
-                item.setComment(cursor.getString(commentColIdx));
-                historyItems.add(item);
-            } while (cursor.moveToNext());
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                historyItems.add(cursor.getHistoryItem());
+                cursor.moveToNext();
+            }
+        } finally {
+            cursor.close();
         }
 
-        cursor.close();
-        dbHelper.close();
+        database.close();
         return historyItems;
     }
 }

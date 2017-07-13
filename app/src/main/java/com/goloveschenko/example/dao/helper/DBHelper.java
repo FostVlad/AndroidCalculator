@@ -16,8 +16,6 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String DATE = "date";
     public static final String COMMENT = "comment";
 
-
-
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }

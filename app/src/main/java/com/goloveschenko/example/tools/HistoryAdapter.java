@@ -12,16 +12,16 @@ import com.goloveschenko.example.entity.HistoryItem;
 import java.util.List;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder>{
-    public final static String SYMBOL_EQUALS = " = ";
+    private final static String SYMBOL_EQUALS = " = ";
 
     private List<HistoryItem> historyItems;
 
-    public static class HistoryViewHolder extends RecyclerView.ViewHolder {
-        public TextView dateTextView;
-        public TextView expressionTextView;
-        public TextView commentTextView;
+    static class HistoryViewHolder extends RecyclerView.ViewHolder {
+        private TextView dateTextView;
+        private TextView expressionTextView;
+        private TextView commentTextView;
 
-        public HistoryViewHolder(View v) {
+        private HistoryViewHolder(View v) {
             super(v);
             dateTextView = (TextView) v.findViewById(R.id.history_date);
             expressionTextView = (TextView) v.findViewById(R.id.history_expression);

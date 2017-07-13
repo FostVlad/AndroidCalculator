@@ -22,19 +22,15 @@ import com.goloveschenko.example.action.Notation;
 import com.goloveschenko.example.action.Operation;
 import com.goloveschenko.example.R;
 import com.goloveschenko.example.dao.manager.DBManager;
+import com.goloveschenko.example.entity.HistoryItem;
 import com.goloveschenko.example.fragment.FragmentBin;
 import com.goloveschenko.example.fragment.FragmentDec;
 import com.goloveschenko.example.fragment.FragmentHex;
 import com.goloveschenko.example.fragment.FragmentOct;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-
-    public static final String DATE_FORMAT = "dd MMM yyyy";
     public static final int RESULT_CODE = 200;
 
     public final static String SYMBOL_PLUS = " + ";
@@ -234,11 +230,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 String result = Converter.valueToString(notation, resultNumber);
                 inputText.setText(result);
 
-                //history
-                String expression = expressionText.getText().toString() + text;
-                SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.US);
-                String date = sdf.format(Calendar.getInstance().getTime());
-                DBManager.getInstance().insertValue(expression, result, date, getApplicationContext());
+                HistoryItem item = new HistoryItem();
+                item.setExpression(expressionText.getText().toString() + text);
+                item.setResult(result);
+                DBManager.getInstance(getApplicationContext()).insertValue(item);
 
                 curNumber = BigDecimal.ZERO;
                 operation = Operation.NONE;

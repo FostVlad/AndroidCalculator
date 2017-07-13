@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class HistoryActivity extends AppCompatActivity {
-
+    public static final String DATE_FORMAT = "dd MMM yyyy";
     public static final String EXTRA_EXPRESSION_RESULT = "result";
 
     public static final int MENU_INPUT_RESULT = 0;
@@ -68,7 +68,7 @@ public class HistoryActivity extends AppCompatActivity {
         historyView = (RecyclerView) findViewById(R.id.historyView);
         historyView.setLayoutManager(new LinearLayoutManager(this));
 
-        historyItems = DBManager.getInstance().selectValues(getApplicationContext());
+        historyItems = DBManager.getInstance(historyView.getContext()).selectValues();
         adapter = new HistoryAdapter(historyItems);
         historyView.setAdapter(adapter);
 
@@ -135,7 +135,7 @@ public class HistoryActivity extends AppCompatActivity {
                                                     comment = null;
                                                 }
                                                 item.setComment(comment);
-                                                DBManager.getInstance().updateValue(item, historyView.getContext());
+                                                DBManager.getInstance(historyView.getContext()).updateValue(item);
                                                 adapter.notifyItemChanged(position);
                                             }
                                         });
@@ -162,7 +162,7 @@ public class HistoryActivity extends AppCompatActivity {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 HistoryItem item = historyItems.get(position);
-                                                DBManager.getInstance().deleteValue(item.getId(), historyView.getContext());
+                                                DBManager.getInstance(historyView.getContext()).deleteValue(item.getId());
                                                 historyItems.remove(position);
                                                 adapter.notifyItemRemoved(position);
                                             }
@@ -199,7 +199,7 @@ public class HistoryActivity extends AppCompatActivity {
                         String comment = commentText.getText().toString();
                         EditText dateText = (EditText) view.findViewById(R.id.search_date);
                         String date = dateText.getText().toString();
-                        historyItems = DBManager.getInstance().search(comment, date, historyView.getContext());
+                        historyItems = DBManager.getInstance(historyView.getContext()).search(comment, date);
                         adapter = new HistoryAdapter(historyItems);
                         historyView.setAdapter(adapter);
                     }
@@ -222,7 +222,7 @@ public class HistoryActivity extends AppCompatActivity {
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        DBManager.getInstance().deleteAll(getApplicationContext());
+                        DBManager.getInstance(historyView.getContext()).deleteAll();
                         historyItems.clear();
                         adapter.notifyDataSetChanged();
                     }
@@ -239,7 +239,7 @@ public class HistoryActivity extends AppCompatActivity {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 calendar.set(year, month, dayOfMonth);
-                SimpleDateFormat sdf = new SimpleDateFormat(MainActivity.DATE_FORMAT, Locale.US);
+                SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.US);
                 String date = sdf.format(calendar.getTime());
                 dateText.setText(date);
             }
