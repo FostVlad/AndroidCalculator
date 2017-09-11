@@ -7,7 +7,7 @@
     android:layout_height="match_parent">
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/inputText"
         android:layout_width="0dp"
         android:layout_height="40dp"
         android:ems="10"
@@ -28,7 +28,7 @@
 
 
     <TextView
-        android:id="@+id/textExpressionView"
+        android:id="@+id/expressionText"
         android:layout_width="0dp"
         android:layout_height="36dp"
         android:layout_marginBottom="442dp"
@@ -51,7 +51,7 @@
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText"
+        app:layout_constraintTop_toBottomOf="@+id/inputText"
         app:layout_constraintVertical_bias="0.24"
         android:layout_marginStart="8dp">
 

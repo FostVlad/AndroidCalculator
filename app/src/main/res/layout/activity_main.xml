@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.goloveschenko.example.com.goloveschenko.calculator.activity.MainActivity">
+    tools:context=".activity.MainActivity">
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/inputText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -28,7 +28,7 @@
 
 
     <TextView
-        android:id="@+id/textExpressionView"
+        android:id="@+id/expressionText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
