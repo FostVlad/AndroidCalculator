@@ -1,4 +1,4 @@
-package com.goloveschenko.example.tools;
+package com.goloveschenko.calculator.tools;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

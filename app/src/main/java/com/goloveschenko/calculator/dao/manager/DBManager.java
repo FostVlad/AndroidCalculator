@@ -1,12 +1,12 @@
-package com.goloveschenko.example.dao.manager;
+package com.goloveschenko.calculator.dao.manager;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.goloveschenko.example.dao.helper.DBHelper;
-import com.goloveschenko.example.entity.HistoryItem;
+import com.goloveschenko.calculator.dao.helper.DBHelper;
+import com.goloveschenko.calculator.entity.HistoryItem;
 
 import java.util.ArrayList;
 import java.util.List;

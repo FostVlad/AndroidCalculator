@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.goloveschenko.example.activity.MainActivity">
+    tools:context="com.goloveschenko.example.com.goloveschenko.calculator.activity.MainActivity">
 
     <EditText
         android:id="@+id/editText"

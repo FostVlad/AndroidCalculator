@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.goloveschenko.example"
+    package="com.goloveschenko.calculator"
     android:installLocation="preferExternal">
 
     <application
@@ -16,7 +16,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.HistoryActivity"
+        <activity android:name="com.goloveschenko.calculator.activity.HistoryActivity"
             android:parentActivityName=".activity.MainActivity" />
     </application>
 

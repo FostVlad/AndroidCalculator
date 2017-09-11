@@ -1,4 +1,4 @@
-package com.goloveschenko.example.fragment;
+package com.goloveschenko.calculator.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,8 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.goloveschenko.example.R;
-import com.goloveschenko.example.activity.MainActivity;
+import com.goloveschenko.calculator.activity.MainActivity;
+import com.goloveschenko.calculator.R;
 
 public class FragmentBin extends Fragment {
     @Nullable

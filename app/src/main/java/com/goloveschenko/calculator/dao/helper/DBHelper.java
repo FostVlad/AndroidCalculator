@@ -1,4 +1,4 @@
-package com.goloveschenko.example.dao.helper;
+package com.goloveschenko.calculator.dao.helper;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

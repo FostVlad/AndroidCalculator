@@ -1,6 +1,6 @@
-package com.goloveschenko.example.entity;
+package com.goloveschenko.calculator.entity;
 
-import com.goloveschenko.example.activity.HistoryActivity;
+import com.goloveschenko.calculator.activity.HistoryActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

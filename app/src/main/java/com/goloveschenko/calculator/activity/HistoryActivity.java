@@ -1,4 +1,4 @@
-package com.goloveschenko.example.activity;
+package com.goloveschenko.calculator.activity;
 
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
@@ -16,11 +16,11 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
-import com.goloveschenko.example.R;
-import com.goloveschenko.example.tools.HistoryAdapter;
-import com.goloveschenko.example.dao.manager.DBManager;
-import com.goloveschenko.example.entity.HistoryItem;
-import com.goloveschenko.example.tools.RecyclerItemClickListener;
+import com.goloveschenko.calculator.tools.HistoryAdapter;
+import com.goloveschenko.calculator.R;
+import com.goloveschenko.calculator.dao.manager.DBManager;
+import com.goloveschenko.calculator.entity.HistoryItem;
+import com.goloveschenko.calculator.tools.RecyclerItemClickListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

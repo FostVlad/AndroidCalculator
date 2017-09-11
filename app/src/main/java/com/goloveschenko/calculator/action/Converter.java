@@ -1,4 +1,4 @@
-package com.goloveschenko.example.action;
+package com.goloveschenko.calculator.action;
 
 import java.math.BigDecimal;
 

@@ -1,4 +1,4 @@
-package com.goloveschenko.example.activity;
+package com.goloveschenko.calculator.activity;
 
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -16,17 +16,17 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import com.goloveschenko.example.action.Calculator;
-import com.goloveschenko.example.action.Converter;
-import com.goloveschenko.example.action.Notation;
-import com.goloveschenko.example.action.Operation;
-import com.goloveschenko.example.R;
-import com.goloveschenko.example.dao.manager.DBManager;
-import com.goloveschenko.example.entity.HistoryItem;
-import com.goloveschenko.example.fragment.FragmentBin;
-import com.goloveschenko.example.fragment.FragmentDec;
-import com.goloveschenko.example.fragment.FragmentHex;
-import com.goloveschenko.example.fragment.FragmentOct;
+import com.goloveschenko.calculator.action.Notation;
+import com.goloveschenko.calculator.fragment.FragmentHex;
+import com.goloveschenko.calculator.fragment.FragmentOct;
+import com.goloveschenko.calculator.action.Calculator;
+import com.goloveschenko.calculator.action.Converter;
+import com.goloveschenko.calculator.action.Operation;
+import com.goloveschenko.calculator.R;
+import com.goloveschenko.calculator.dao.manager.DBManager;
+import com.goloveschenko.calculator.entity.HistoryItem;
+import com.goloveschenko.calculator.fragment.FragmentBin;
+import com.goloveschenko.calculator.fragment.FragmentDec;
 
 import java.math.BigDecimal;
 

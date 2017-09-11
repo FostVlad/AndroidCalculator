@@ -1,10 +1,10 @@
-package com.goloveschenko.example.dao.manager;
+package com.goloveschenko.calculator.dao.manager;
 
 import android.database.Cursor;
 import android.database.CursorWrapper;
 
-import com.goloveschenko.example.dao.helper.DBHelper;
-import com.goloveschenko.example.entity.HistoryItem;
+import com.goloveschenko.calculator.dao.helper.DBHelper;
+import com.goloveschenko.calculator.entity.HistoryItem;
 
 public class HistoryCursor extends CursorWrapper {
     public HistoryCursor(Cursor cursor) {

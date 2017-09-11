@@ -1,4 +1,4 @@
-package com.goloveschenko.example.tools;
+package com.goloveschenko.calculator.tools;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -6,8 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.goloveschenko.example.R;
-import com.goloveschenko.example.entity.HistoryItem;
+import com.goloveschenko.calculator.R;
+import com.goloveschenko.calculator.entity.HistoryItem;
 
 import java.util.List;
 
